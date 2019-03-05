@@ -4,7 +4,8 @@ include "utils.php";
 $dbConn =  connect($db);
 /*
   listar todos los posts o solo uno
- */
+*/
+print_r($_GET);
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     if (isset($_GET['id']))
@@ -15,6 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
       $sql->execute();
       header("HTTP/1.1 200 OK");
       echo json_encode(  $sql->fetch(PDO::FETCH_ASSOC)  );
+      exit();
+    }
+    elseif(isset($_GET['tocho'])){
+        //Mostrar un post
+      $sql = $dbConn->prepare("SELECT * FROM libros ORDER BY paginas DESC LIMIT 1");
+      $sql->execute();
+      $sql->setFetchMode(PDO::FETCH_ASSOC);
+      header("HTTP/1.1 200 OK");
+      echo json_encode( $sql->fetchAll()  );
       exit();
     }
     else {
