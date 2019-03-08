@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
       $sql->bindValue(':id', $_GET['id']);
       $sql->execute();
       header("HTTP/1.1 200 OK");
-      echo json_encode(  $sql->fetch(PDO::FETCH_ASSOC)  );
+      echo json_encode($sql->fetch(PDO::FETCH_ASSOC));
       exit();
 
     }
@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 
   }
 }
+
 //POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
@@ -74,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
    }
   }
 }
-//Borrar
+
+//DELETE
 if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
 {
   $id = $_GET['id'];
@@ -84,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
   header("HTTP/1.1 200 OK");
   exit();
 }
-//Actualizar
+
+//PUT
 if ($_SERVER['REQUEST_METHOD'] == 'PUT')
 {
     $input = $_GET;
@@ -101,6 +104,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'PUT')
     header("HTTP/1.1 200 OK");
     exit();
 }
-//En caso de que ninguna de las opciones anteriores se haya ejecutado
 header("HTTP/1.1 400 Bad Request");
 ?>
