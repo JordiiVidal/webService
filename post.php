@@ -2,7 +2,8 @@
 include "config.php";
 include "utils.php";
 $dbConn =  connect($db);
-
+$raw = file_get_contents("php://input");
+$datos = json_decode($raw);
 //GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
@@ -27,6 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
       exit();
 
     }
+    elseif(isset($_GET['accion']) && $_GET['accion'] === 'obras'){
+      
+      $sql = $dbConn->prepare("SELECT * FROM libros WHERE autor = :autor");
+      $sql->bindValue(':autor', $datos->autor);
+      $sql->execute();
+      header("HTTP/1.1 200 OK");
+      echo json_encode($sql->fetch(PDO::FETCH_ASSOC));
+      exit();
+  
+    }
     else {
       
       $sql = $dbConn->prepare("SELECT * FROM libros");
@@ -42,21 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 //POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-
-  if(isset($_GET['accion']) && $_GET['accion'] === 'obras'){
-
-    $input = $_POST;
-    $sql = "SELECT * FROM libros WHERE autor = :autor";
-    $statement = $dbConn->prepare($sql);
-    bindAllValues($statement, $input);
-    $statement->execute();
-    $statement->setFetchMode(PDO::FETCH_ASSOC);
-    header("HTTP/1.1 200 OK");
-    echo json_encode($statement->fetchAll());
-    exit();
-
-  }else{
-
     $input = $_POST;
     $sql = "INSERT INTO libros
           (tItulo, autor, paginas, ISBN)
@@ -73,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       echo json_encode($input);
       exit();
    }
-  }
+  
 }
 
 //DELETE
