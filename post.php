@@ -33,8 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
       $sql = $dbConn->prepare("SELECT * FROM libros WHERE autor = :autor");
       $sql->bindValue(':autor', $datos->autor);
       $sql->execute();
+      $sql->setFetchMode(PDO::FETCH_ASSOC);
       header("HTTP/1.1 200 OK");
-      echo json_encode($sql->fetch(PDO::FETCH_ASSOC));
+      echo json_encode( $sql->fetchAll());
       exit();
   
     }
