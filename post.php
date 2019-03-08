@@ -2,44 +2,60 @@
 include "config.php";
 include "utils.php";
 $dbConn =  connect($db);
-/*
-  listar todos los posts o solo uno
-*/
-print_r($_GET);
+
+//GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     if (isset($_GET['id']))
     {
-      //Mostrar un post
+      
       $sql = $dbConn->prepare("SELECT * FROM libros where id=:id");
       $sql->bindValue(':id', $_GET['id']);
       $sql->execute();
       header("HTTP/1.1 200 OK");
       echo json_encode(  $sql->fetch(PDO::FETCH_ASSOC)  );
       exit();
+
     }
-    elseif(isset($_GET['tocho'])){
-        //Mostrar un post
+    elseif(isset($_GET['accion']) && $_GET['accion'] === 'tocho'){
+
       $sql = $dbConn->prepare("SELECT * FROM libros ORDER BY paginas DESC LIMIT 1");
       $sql->execute();
       $sql->setFetchMode(PDO::FETCH_ASSOC);
       header("HTTP/1.1 200 OK");
-      echo json_encode( $sql->fetchAll()  );
+      echo json_encode( $sql->fetchAll());
       exit();
+
     }
     else {
-      //Mostrar lista de post
+      
       $sql = $dbConn->prepare("SELECT * FROM libros");
       $sql->execute();
       $sql->setFetchMode(PDO::FETCH_ASSOC);
       header("HTTP/1.1 200 OK");
       echo json_encode( $sql->fetchAll()  );
       exit();
+
   }
 }
-// Crear un nuevo post
+//POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
+
+  if(isset($_GET['accion']) && $_GET['accion'] === 'obras'){
+
+    $input = $_POST;
+    $sql = "SELECT * FROM libros WHERE autor = :autor";
+    $statement = $dbConn->prepare($sql);
+    bindAllValues($statement, $input);
+    $statement->execute();
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+    header("HTTP/1.1 200 OK");
+    echo json_encode($statement->fetchAll());
+    exit();
+
+  }else{
+
     $input = $_POST;
     $sql = "INSERT INTO libros
           (tItulo, autor, paginas, ISBN)
@@ -56,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       echo json_encode($input);
       exit();
    }
+  }
 }
 //Borrar
 if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
